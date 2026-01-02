@@ -215,6 +215,37 @@ module PotatoMesh
             db.execute("ALTER TABLE ingestors ADD COLUMN modem_preset TEXT")
           end
         end
+
+        # Add ingestor_id tracking columns to data tables
+        message_columns = db.execute("PRAGMA table_info(messages)").map { |row| row[1] }
+        unless message_columns.include?("ingestor_id")
+          db.execute("ALTER TABLE messages ADD COLUMN ingestor_id TEXT")
+          db.execute("CREATE INDEX IF NOT EXISTS idx_messages_ingestor_id ON messages(ingestor_id)")
+        end
+
+        position_columns = db.execute("PRAGMA table_info(positions)").map { |row| row[1] }
+        unless position_columns.include?("ingestor_id")
+          db.execute("ALTER TABLE positions ADD COLUMN ingestor_id TEXT")
+          db.execute("CREATE INDEX IF NOT EXISTS idx_positions_ingestor_id ON positions(ingestor_id)")
+        end
+
+        telemetry_columns = db.execute("PRAGMA table_info(telemetry)").map { |row| row[1] }
+        unless telemetry_columns.include?("ingestor_id")
+          db.execute("ALTER TABLE telemetry ADD COLUMN ingestor_id TEXT")
+          db.execute("CREATE INDEX IF NOT EXISTS idx_telemetry_ingestor_id ON telemetry(ingestor_id)")
+        end
+
+        neighbor_columns = db.execute("PRAGMA table_info(neighbors)").map { |row| row[1] }
+        unless neighbor_columns.include?("ingestor_id")
+          db.execute("ALTER TABLE neighbors ADD COLUMN ingestor_id TEXT")
+          db.execute("CREATE INDEX IF NOT EXISTS idx_neighbors_ingestor_id ON neighbors(ingestor_id)")
+        end
+
+        trace_columns = db.execute("PRAGMA table_info(traces)").map { |row| row[1] }
+        unless trace_columns.include?("ingestor_id")
+          db.execute("ALTER TABLE traces ADD COLUMN ingestor_id TEXT")
+          db.execute("CREATE INDEX IF NOT EXISTS idx_traces_ingestor_id ON traces(ingestor_id)")
+        end
       rescue SQLite3::SQLException, Errno::ENOENT => e
         warn_log(
           "Failed to apply schema upgrade",

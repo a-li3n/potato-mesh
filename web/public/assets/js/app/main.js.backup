@@ -2534,8 +2534,7 @@ export function initializeApp(config) {
     const longNameDisplay = longName != null ? String(longName) : '';
     const shortHtml = renderShortHtml(shortName, role, longNameDisplay, nodeData || metadataSource || {});
     div.className = 'chat-entry-node';
-    const ingestorBadge = formatIngestorBadge((metadataSource || nodeData || {}).ingestor_id ?? (metadataSource || nodeData || {}).ingestorId);
-    div.innerHTML = `${prefix}${presetTag} ${shortHtml} ${messageHtml}${ingestorBadge}`;
+    div.innerHTML = `${prefix}${presetTag} ${shortHtml} ${messageHtml}`;
     return div;
   }
 
@@ -2902,20 +2901,6 @@ export function initializeApp(config) {
   }
 
   /**
-   * Format ingestor ID badge for chat entries.
-   *
-   * @param {string|null} ingestorId The ingestor node ID.
-   * @returns {string} HTML string for ingestor badge or empty string.
-   */
-  function formatIngestorBadge(ingestorId) {
-    if (!ingestorId || typeof ingestorId !== 'string') {
-      return '';
-    }
-    const escaped = escapeHtml(ingestorId);
-    const shortId = escaped.replace(/^!/, '').slice(-4).toUpperCase();
-    return ` <span class="ingestor-badge" title="Received by ${escaped}">[${shortId}]</span>`;
-  }
-  /**
    * Build a chat log entry for a text message.
    *
    * @param {Object} m Message payload.
@@ -2966,8 +2951,7 @@ export function initializeApp(config) {
     });
     const presetTag = formatChatPresetTag({ presetCode: metadata.presetCode });
     div.className = 'chat-entry-msg';
-    const ingestorBadge = formatIngestorBadge(m.ingestor_id ?? m.ingestorId);
-    div.innerHTML = `${prefix}${presetTag} ${short} ${text}${ingestorBadge}`;
+    div.innerHTML = `${prefix}${presetTag} ${short} ${text}`;
     return div;
   }
 
