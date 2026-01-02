@@ -12,6 +12,7 @@
 
 # Used by dotenv library to load environment variables.
 .env
+WARP.md
 
 # Ignore Byebug command history file.
 .byebug_history
@@ -23,6 +24,7 @@ build/
 *.bridgesupport
 build-iPhoneOS/
 build-iPhoneSimulator/
+data/.venv/
 
 ## Specific to RubyMotion (use of CocoaPods):
 #
@@ -42,6 +44,7 @@ build-iPhoneSimulator/
 /.bundle/
 /vendor/bundle
 /lib/bundler/man/
+
 
 # for a library or gem, you might want to ignore these files since the code is
 # intended to run in multiple environments; otherwise, check them in:
@@ -76,3 +79,4 @@ web/node_modules/
 
 # Debug symbols
 ignored.txt
+
