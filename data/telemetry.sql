@@ -53,9 +53,11 @@ CREATE TABLE IF NOT EXISTS telemetry (
     rainfall_1h             REAL,
     rainfall_24h            REAL,
     soil_moisture           INTEGER,
-    soil_temperature        REAL
+    soil_temperature        REAL,
+    ingestor_id             TEXT
 );
 
 CREATE INDEX IF NOT EXISTS idx_telemetry_rx_time ON telemetry(rx_time);
 CREATE INDEX IF NOT EXISTS idx_telemetry_node_id ON telemetry(node_id);
 CREATE INDEX IF NOT EXISTS idx_telemetry_time ON telemetry(telemetry_time);
+CREATE INDEX IF NOT EXISTS idx_telemetry_ingestor_id ON telemetry(ingestor_id);

@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS neighbors (
     neighbor_id TEXT NOT NULL,
     snr         REAL,
     rx_time     INTEGER NOT NULL,
+    ingestor_id TEXT,
     PRIMARY KEY (node_id, neighbor_id),
     FOREIGN KEY (node_id) REFERENCES nodes(node_id) ON DELETE CASCADE,
     FOREIGN KEY (neighbor_id) REFERENCES nodes(node_id) ON DELETE CASCADE
@@ -24,3 +25,4 @@ CREATE TABLE IF NOT EXISTS neighbors (
 
 CREATE INDEX IF NOT EXISTS idx_neighbors_rx_time ON neighbors(rx_time);
 CREATE INDEX IF NOT EXISTS idx_neighbors_neighbor_id ON neighbors(neighbor_id);
+CREATE INDEX IF NOT EXISTS idx_neighbors_ingestor_id ON neighbors(ingestor_id);

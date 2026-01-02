@@ -356,7 +356,7 @@ module PotatoMesh
           SELECT m.id, m.rx_time, m.rx_iso, m.from_id, m.to_id, m.channel,
                  m.portnum, m.text, m.encrypted, m.rssi, m.hop_limit,
                  m.lora_freq, m.modem_preset, m.channel_name, m.snr,
-                 m.reply_id, m.emoji
+                 m.reply_id, m.emoji, m.ingestor_id
           FROM messages m
         SQL
         sql += "    WHERE #{where_clauses.join(" AND ")}\n"
@@ -755,7 +755,7 @@ module PotatoMesh
         end
 
         sql = <<~SQL
-          SELECT id, request_id, src, dest, rx_time, rx_iso, rssi, snr, elapsed_ms
+          SELECT id, request_id, src, dest, rx_time, rx_iso, rssi, snr, elapsed_ms, ingestor_id
           FROM traces
         SQL
         sql += "    WHERE #{where_clauses.join(" AND ")}\n" if where_clauses.any?

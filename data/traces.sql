@@ -21,7 +21,8 @@ CREATE TABLE IF NOT EXISTS traces (
     rx_iso      TEXT NOT NULL,
     rssi        INTEGER,
     snr         REAL,
-    elapsed_ms  INTEGER
+    elapsed_ms  INTEGER,
+    ingestor_id TEXT
 );
 
 CREATE TABLE IF NOT EXISTS trace_hops (
@@ -34,5 +35,6 @@ CREATE TABLE IF NOT EXISTS trace_hops (
 
 CREATE INDEX IF NOT EXISTS idx_traces_rx_time ON traces(rx_time);
 CREATE INDEX IF NOT EXISTS idx_traces_request ON traces(request_id);
+CREATE INDEX IF NOT EXISTS idx_traces_ingestor_id ON traces(ingestor_id);
 CREATE INDEX IF NOT EXISTS idx_trace_hops_trace ON trace_hops(trace_id);
 CREATE INDEX IF NOT EXISTS idx_trace_hops_node ON trace_hops(node_id);

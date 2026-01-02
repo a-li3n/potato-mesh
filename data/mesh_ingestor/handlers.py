@@ -189,6 +189,13 @@ def _radio_metadata_fields() -> dict[str, object]:
     preset = getattr(config, "MODEM_PRESET", None)
     if preset is not None:
         metadata["modem_preset"] = preset
+    
+    # Add ingestor_id from the ingestors module
+    from . import ingestors
+    ingestor_id = ingestors.STATE.node_id
+    if ingestor_id is not None:
+        metadata["ingestor_id"] = ingestor_id
+    
     return metadata
 
 

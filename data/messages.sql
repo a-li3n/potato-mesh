@@ -29,7 +29,8 @@ CREATE TABLE IF NOT EXISTS messages (
     modem_preset TEXT,
     channel_name TEXT,
     reply_id INTEGER,
-    emoji TEXT
+    emoji TEXT,
+    ingestor_id TEXT
 );
 
 CREATE INDEX IF NOT EXISTS idx_messages_rx_time   ON messages(rx_time);
@@ -38,3 +39,4 @@ CREATE INDEX IF NOT EXISTS idx_messages_to_id     ON messages(to_id);
 CREATE INDEX IF NOT EXISTS idx_messages_channel   ON messages(channel);
 CREATE INDEX IF NOT EXISTS idx_messages_portnum   ON messages(portnum);
 CREATE INDEX IF NOT EXISTS idx_messages_reply_id  ON messages(reply_id);
+CREATE INDEX IF NOT EXISTS idx_messages_ingestor_id ON messages(ingestor_id);
