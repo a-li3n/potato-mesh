@@ -82,7 +82,7 @@
    map_zoom_override = defined?(map_zoom) ? map_zoom : nil
    show_info_button = !full_screen_view
    show_footer = !full_screen_view
-   show_filter_input = !%i[node_detail charts federation].include?(view_mode)
+   show_filter_input = !%i[node_detail charts federation packet_stats].include?(view_mode)
    show_auto_refresh_toggle = show_auto_refresh_controls
    show_refresh_actions = show_auto_refresh_controls || view_mode == :federation
    controls_classes = ["controls"]

@@ -804,6 +804,107 @@ module PotatoMesh
       ensure
         db&.close
       end
+
+      # Fetch packet statistics grouped by node with deduplication.
+      # Counts unique packets per node across all packet types.
+      #
+      # @param since [Integer] unix timestamp threshold for packet freshness.
+      # @return [Array<Hash>] statistics per node including packet type counts.
+      def query_packet_stats(since: 0)
+        db = open_database(readonly: true)
+        db.results_as_hash = true
+        now = Time.now.to_i
+        min_timestamp = now - PotatoMesh::Config.week_seconds
+        since_threshold = normalize_since_threshold(since, floor: min_timestamp)
+
+        sql = <<~SQL
+          WITH all_packets AS (
+            SELECT DISTINCT
+              m.from_id AS node_id,
+              m.id AS packet_id,
+              'message' AS packet_type
+            FROM messages m
+            WHERE m.from_id IS NOT NULL
+              AND m.rx_time >= ?
+            
+            UNION
+            
+            SELECT DISTINCT
+              p.node_id,
+              p.id AS packet_id,
+              'position' AS packet_type
+            FROM positions p
+            WHERE p.node_id IS NOT NULL
+              AND COALESCE(p.rx_time, p.position_time, 0) >= ?
+            
+            UNION
+            
+            SELECT DISTINCT
+              t.node_id,
+              t.id AS packet_id,
+              'telemetry' AS packet_type
+            FROM telemetry t
+            WHERE t.node_id IS NOT NULL
+              AND COALESCE(t.rx_time, t.telemetry_time, 0) >= ?
+            
+            UNION
+            
+            SELECT DISTINCT
+              CAST(tr.src AS TEXT) AS node_id,
+              tr.id AS packet_id,
+              'trace' AS packet_type
+            FROM traces tr
+            WHERE tr.src IS NOT NULL
+              AND tr.rx_time >= ?
+          )
+          SELECT
+            ap.node_id,
+            SUM(CASE WHEN ap.packet_type = 'message' THEN 1 ELSE 0 END) AS message_count,
+            SUM(CASE WHEN ap.packet_type = 'position' THEN 1 ELSE 0 END) AS position_count,
+            SUM(CASE WHEN ap.packet_type = 'telemetry' THEN 1 ELSE 0 END) AS telemetry_count,
+            SUM(CASE WHEN ap.packet_type = 'trace' THEN 1 ELSE 0 END) AS trace_count,
+            COUNT(DISTINCT ap.packet_id) AS total_count
+          FROM all_packets ap
+          GROUP BY ap.node_id
+          ORDER BY total_count DESC, ap.node_id
+        SQL
+
+        params = [since_threshold, since_threshold, since_threshold, since_threshold]
+        rows = db.execute(sql, params)
+
+        rows.each do |r|
+          r.delete_if { |key, _| key.is_a?(Integer) }
+          node_id = string_or_nil(r["node_id"])
+          
+          canonical_id = node_id ? string_or_nil(normalize_node_id(db, node_id)) : nil
+          r["node_id"] = canonical_id || node_id
+          
+          r["message_count"] = coerce_integer(r["message_count"]) || 0
+          r["position_count"] = coerce_integer(r["position_count"]) || 0
+          r["telemetry_count"] = coerce_integer(r["telemetry_count"]) || 0
+          r["trace_count"] = coerce_integer(r["trace_count"]) || 0
+          r["total_count"] = coerce_integer(r["total_count"]) || 0
+          
+          short_name = nil
+          long_name = nil
+          if canonical_id
+            node_row = db.execute(
+              "SELECT short_name, long_name FROM nodes WHERE node_id = ? LIMIT 1",
+              [canonical_id]
+            ).first
+            if node_row
+              short_name = string_or_nil(node_row["short_name"])
+              long_name = string_or_nil(node_row["long_name"])
+            end
+          end
+          r["short_name"] = short_name if short_name
+          r["long_name"] = long_name if long_name
+        end
+
+        rows.map { |row| compact_api_row(row) }
+      ensure
+        db&.close
+      end
     end
   end
 end

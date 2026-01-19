@@ -2149,3 +2149,71 @@ body.dark #map .leaflet-tile.map-tiles {
   opacity: 1;
   color: #555;
 }
+
+body.dark .ingestor-badge {
+  color: #aaa;
+}
+
+body.dark .ingestor-badge:hover {
+  color: #ddd;
+}
+
+/* ===========================
+   Packet Statistics Page Styles
+   =========================== */
+
+.full-screen-section--packet-stats {
+  padding: 24px var(--pad) 48px;
+  max-width: none;
+  margin: 0;
+  width: 100%;
+}
+
+.packet-stats-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+#packetStats {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+#packetStats th,
+#packetStats td {
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+#packetStats th {
+  font-weight: 600;
+  background: var(--table-header-bg, var(--surface));
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+#packetStats tbody tr:hover {
+  background: var(--hover-bg, rgba(255, 255, 255, 0.05));
+}
+
+.packet-stats-col--name {
+  min-width: 120px;
+}
+
+.packet-stats-col--tel,
+.packet-stats-col--pos,
+.packet-stats-col--tr,
+.packet-stats-col--tc,
+.packet-stats-col--all {
+  min-width: 80px;
+  text-align: center;
+}
+
+@media (max-width: 900px) {
+  .full-screen-section--packet-stats {
+    padding: 16px var(--pad) 32px;
+  }
+}

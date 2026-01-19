@@ -16,6 +16,8 @@
 
 import { readAppConfig } from './config.js';
 import { initializeApp } from './main.js';
+import { initializeFederationPage } from './federation-page.js';
+import { initializePacketStatsPage } from './packet-stats-page.js';
 import { DEFAULT_CONFIG, mergeConfig } from './settings.js';
 
 export { DEFAULT_CONFIG, mergeConfig } from './settings.js';
@@ -29,5 +31,19 @@ export { DEFAULT_CONFIG, mergeConfig } from './settings.js';
 document.addEventListener('DOMContentLoaded', () => {
   const rawConfig = readAppConfig();
   const config = mergeConfig(rawConfig);
-  initializeApp(config);
+  const bodyClassList = document.body ? document.body.classList : null;
+  const isFederationView = bodyClassList ? bodyClassList.contains('view-federation') : false;
+  const isPacketStatsView = bodyClassList ? bodyClassList.contains('view-packet_stats') : false;
+
+  if (isFederationView) {
+    void initializeFederationPage({ config }).catch(error => {
+      console.error('Federation page initialization failed', error);
+    });
+  } else if (isPacketStatsView) {
+    void initializePacketStatsPage({ config }).catch(error => {
+      console.error('Packet stats page initialization failed', error);
+    });
+  } else {
+    initializeApp(config);
+  }
 });

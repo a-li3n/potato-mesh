@@ -208,6 +208,11 @@ module PotatoMesh
             payload = load_instances_for_api
             JSON.generate(payload)
           end
+
+          app.get "/api/packet-stats" do
+            content_type :json
+            query_packet_stats(since: params["since"]).to_json
+          end
         end
       end
     end

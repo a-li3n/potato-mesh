@@ -219,6 +219,10 @@ module PotatoMesh
             render_root_view(:nodes, view_mode: :nodes)
           end
 
+          app.get %r{/packet-stats/?} do
+            render_root_view("packet-stats", view_mode: :packet_stats)
+          end
+
           app.get "/metrics" do
             content_type ::Prometheus::Client::Formats::Text::CONTENT_TYPE
             ::Prometheus::Client::Formats::Text.marshal(::Prometheus::Client.registry)
