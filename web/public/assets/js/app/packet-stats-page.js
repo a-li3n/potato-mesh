@@ -119,6 +119,7 @@ export async function initializePacketStatsPage(options = {}) {
   const tableEl = document.getElementById('packetStats');
   const tableBody = document.querySelector('#packetStats tbody');
   const statusEl = document.getElementById('status');
+  const timeframeSelect = document.getElementById('timeframeSelect');
   const sortButtons = tableEl
     ? Array.from(tableEl.querySelectorAll('thead .sort-button[data-sort-key]'))
     : [];
@@ -252,28 +253,71 @@ export async function initializePacketStatsPage(options = {}) {
     });
   };
 
-  // Fetch packet stats data
-  let stats = [];
-  try {
-    const response = await fetchImpl('/api/packet-stats', {
-      headers: { Accept: 'application/json' },
-      credentials: 'omit'
-    });
-    if (response.ok) {
-      stats = await response.json();
+  /**
+   * Fetch packet stats data for the given timeframe.
+   *
+   * @param {number} timeframeSeconds Timeframe in seconds (0 for all time).
+   * @returns {Promise<Array>} Packet statistics data.
+   */
+  const fetchData = async timeframeSeconds => {
+    if (statusEl) {
+      statusEl.textContent = 'loading…';
+      statusEl.classList.add('pill--loading');
     }
-  } catch (err) {
-    console.warn('Failed to fetch packet statistics', err);
+
+    let stats = [];
+    try {
+      let url = '/api/packet-stats';
+      if (timeframeSeconds > 0) {
+        const now = Math.floor(Date.now() / 1000);
+        const since = now - timeframeSeconds;
+        url = `/api/packet-stats?since=${since}`;
+      }
+      const response = await fetchImpl(url, {
+        headers: { Accept: 'application/json' },
+        credentials: 'omit'
+      });
+      if (response.ok) {
+        stats = await response.json();
+      }
+    } catch (err) {
+      console.warn('Failed to fetch packet statistics', err);
+    }
+
+    if (statusEl) {
+      statusEl.textContent = `${stats.length} nodes`;
+      statusEl.classList.remove('pill--loading');
+    }
+
+    return stats;
+  };
+
+  /**
+   * Load and render data for the current timeframe selection.
+   *
+   * @returns {Promise<void>}
+   */
+  const loadAndRender = async () => {
+    const timeframeSeconds = timeframeSelect
+      ? parseInt(timeframeSelect.value, 10)
+      : 86400; // Default to 24 hours
+    const stats = await fetchData(timeframeSeconds);
+    if (tableBody && Array.isArray(stats)) {
+      renderTableRows(stats);
+    }
+  };
+
+  // Attach timeframe change handler
+  if (timeframeSelect) {
+    timeframeSelect.addEventListener('change', loadAndRender);
   }
 
-  if (statusEl) {
-    statusEl.textContent = `${stats.length} nodes`;
-    statusEl.classList.remove('pill--loading');
-  }
+  // Initial load and setup
+  const initialTimeframe = timeframeSelect ? parseInt(timeframeSelect.value, 10) : 86400;
+  const initialStats = await fetchData(initialTimeframe);
 
-  // Render table
-  if (tableBody && Array.isArray(stats)) {
-    attachSortHandlers(() => renderTableRows(stats));
-    renderTableRows(stats);
+  if (tableBody && Array.isArray(initialStats)) {
+    attachSortHandlers(() => loadAndRender());
+    renderTableRows(initialStats);
   }
 }

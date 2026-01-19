@@ -14,16 +14,28 @@
   limitations under the License.
 -->
 <section class="full-screen-section full-screen-section--packet-stats">
+  <div class="packet-stats-controls">
+    <label for="timeframeSelect">Timeframe:</label>
+    <select id="timeframeSelect" class="timeframe-select">
+      <option value="3600">Last hour</option>
+      <option value="21600">Last 6 hours</option>
+      <option value="86400" selected>Last 24 hours</option>
+      <option value="604800">Last 7 days</option>
+      <option value="2592000">Last 30 days</option>
+      <option value="7776000">Last 90 days</option>
+      <option value="0">All time</option>
+    </select>
+  </div>
   <div class="packet-stats-table-wrapper">
     <table id="packetStats">
       <thead>
         <tr>
           <th class="packet-stats-col packet-stats-col--name"><button type="button" class="sort-button" data-sort-key="short_name" data-sort-label="Name">Name <span class="sort-indicator" aria-hidden="true"></span></button></th>
-          <th class="packet-stats-col packet-stats-col--tel"><button type="button" class="sort-button" data-sort-key="telemetry_count" data-sort-label="Telemetry">Tel <span class="sort-indicator" aria-hidden="true"></span></button></th>
-          <th class="packet-stats-col packet-stats-col--pos"><button type="button" class="sort-button" data-sort-key="position_count" data-sort-label="Position">Pos <span class="sort-indicator" aria-hidden="true"></span></button></th>
-          <th class="packet-stats-col packet-stats-col--tr"><button type="button" class="sort-button" data-sort-key="trace_count" data-sort-label="Trace">Tr <span class="sort-indicator" aria-hidden="true"></span></button></th>
-          <th class="packet-stats-col packet-stats-col--tc"><button type="button" class="sort-button" data-sort-key="message_count" data-sort-label="Text Chat">Tc <span class="sort-indicator" aria-hidden="true"></span></button></th>
-          <th class="packet-stats-col packet-stats-col--all"><button type="button" class="sort-button" data-sort-key="total_count" data-sort-label="All">All <span class="sort-indicator" aria-hidden="true"></span></button></th>
+          <th class="packet-stats-col packet-stats-col--tel"><button type="button" class="sort-button" data-sort-key="telemetry_count" data-sort-label="Telemetry">Telemetry <span class="sort-indicator" aria-hidden="true"></span></button></th>
+          <th class="packet-stats-col packet-stats-col--pos"><button type="button" class="sort-button" data-sort-key="position_count" data-sort-label="Position">Position <span class="sort-indicator" aria-hidden="true"></span></button></th>
+          <th class="packet-stats-col packet-stats-col--tr"><button type="button" class="sort-button" data-sort-key="trace_count" data-sort-label="Trace">Trace <span class="sort-indicator" aria-hidden="true"></span></button></th>
+          <th class="packet-stats-col packet-stats-col--tc"><button type="button" class="sort-button" data-sort-key="message_count" data-sort-label="Messages">Messages <span class="sort-indicator" aria-hidden="true"></span></button></th>
+          <th class="packet-stats-col packet-stats-col--all"><button type="button" class="sort-button" data-sort-key="total_count" data-sort-label="Total">Total <span class="sort-indicator" aria-hidden="true"></span></button></th>
         </tr>
       </thead>
       <tbody></tbody>
