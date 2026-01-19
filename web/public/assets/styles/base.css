@@ -2229,7 +2229,14 @@ body.dark .ingestor-badge:hover {
 }
 
 .packet-stats-col--name {
-  min-width: 120px;
+  min-width: 200px;
+}
+
+.node-short-id {
+  font-size: 0.85em;
+  color: var(--muted);
+  opacity: 0.7;
+  font-family: monospace;
 }
 
 .packet-stats-col--tel,

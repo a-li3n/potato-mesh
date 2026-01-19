@@ -125,7 +125,7 @@ export async function initializePacketStatsPage(options = {}) {
     : [];
 
   const tableSorters = {
-    short_name: { getValue: stat => stat.short_name ?? getShortNodeId(stat.node_id), compare: compareString, hasValue: hasStringValue, defaultDirection: 'asc' },
+    short_name: { getValue: stat => stat.long_name ?? stat.short_name ?? getShortNodeId(stat.node_id), compare: compareString, hasValue: hasStringValue, defaultDirection: 'asc' },
     telemetry_count: { getValue: stat => stat.telemetry_count ?? 0, compare: compareNumber, hasValue: hasNumberValue, defaultDirection: 'desc' },
     position_count: { getValue: stat => stat.position_count ?? 0, compare: compareNumber, hasValue: hasNumberValue, defaultDirection: 'desc' },
     trace_count: { getValue: stat => stat.trace_count ?? 0, compare: compareNumber, hasValue: hasNumberValue, defaultDirection: 'desc' },
@@ -199,7 +199,22 @@ export async function initializePacketStatsPage(options = {}) {
 
     for (const stat of sorted) {
       const tr = document.createElement('tr');
-      const displayName = stat.short_name || getShortNodeId(stat.node_id) || '—';
+      const longName = stat.long_name ? escapeHtml(stat.long_name) : null;
+      const shortName = stat.short_name ? escapeHtml(stat.short_name) : null;
+      const shortId = escapeHtml(getShortNodeId(stat.node_id) || '—');
+      
+      // Display long name if available, otherwise short name, otherwise short ID
+      let displayName;
+      if (longName) {
+        // Show long name with short name or ID in parentheses
+        const fallback = shortName || shortId;
+        displayName = `${longName} <span class="node-short-id">(${fallback})</span>`;
+      } else if (shortName) {
+        displayName = shortName;
+      } else {
+        displayName = shortId;
+      }
+
       const telCount = toFiniteNumber(stat.telemetry_count) ?? 0;
       const posCount = toFiniteNumber(stat.position_count) ?? 0;
       const traceCount = toFiniteNumber(stat.trace_count) ?? 0;
@@ -207,7 +222,7 @@ export async function initializePacketStatsPage(options = {}) {
       const totalCount = toFiniteNumber(stat.total_count) ?? 0;
 
       tr.innerHTML = `
-        <td class="packet-stats-col packet-stats-col--name">${escapeHtml(displayName)}</td>
+        <td class="packet-stats-col packet-stats-col--name">${displayName}</td>
         <td class="packet-stats-col packet-stats-col--tel mono">${escapeHtml(String(telCount))}</td>
         <td class="packet-stats-col packet-stats-col--pos mono">${escapeHtml(String(posCount))}</td>
         <td class="packet-stats-col packet-stats-col--tr mono">${escapeHtml(String(traceCount))}</td>
