@@ -220,7 +220,7 @@ module PotatoMesh
           end
 
           app.get %r{/packet-stats/?} do
-            render_root_view("packet-stats", view_mode: :packet_stats)
+            render_root_view(:"packet-stats", view_mode: :packet_stats)
           end
 
           app.get "/metrics" do
